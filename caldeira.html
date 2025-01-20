@@ -267,7 +267,7 @@
 
             // Atualizando a caldeira (termo, manômetro e resistência)
             document.querySelector(".nivel").style.height = `${(temperatura / 10)}%`; // Ajustando a altura do nível no termômetro
-            document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 500) * 60}deg)`; // Manômetro
+            document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 100) * 180}deg)`; // Manômetro
             if (temperatura > 30) {
                 document.querySelector(".caldeira").classList.add("aquecendo");
             }
