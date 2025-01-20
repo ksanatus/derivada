@@ -221,7 +221,7 @@
             <!-- Display para Temperatura e Pressão -->
             <div class="caldeira-info">
                 <div class="display" id="temperaturaDisplay">Temp: 0°C</div>
-                <div class="display" id="pressaoDisplay">Pressao: 0 atm</div>
+                <div class="display" id="pressaoDisplay">Pressao: 0 Mpa</div>
             </div>
 
             <!-- Botão Play dentro da caldeira-container -->
@@ -263,11 +263,11 @@
 
             // Adiciona a temperatura e a pressão aos arrays
             temperaturas.push(temperatura);
-            pressoes.push(pressao);
+            pressoes.push(pressao*0.101325);
 
             // Atualizando a caldeira (termo, manômetro e resistência)
             document.querySelector(".nivel").style.height = `${(temperatura / 10)}%`; // Ajustando a altura do nível no termômetro
-            document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 1000) * 180}deg)`; // Manômetro
+            document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 500) * 180}deg)`; // Manômetro
             if (temperatura > 30) {
                 document.querySelector(".caldeira").classList.add("aquecendo");
             }
@@ -283,8 +283,8 @@
 
             var layout = {
                 title: 'Temperatura vs Pressão',
-                xaxis: { title: 'Temperatura (°C)', range: [0, 1000] },  // Temperatura fixada entre 0 e 1000
-                yaxis: { title: 'Pressão (atm)', range: [0, 1000] }       // Pressão fixada entre 0 e 500
+                xaxis: { title: 'Temperatura (°C)', range: [0, 500] },  // Temperatura fixada entre 0 e 1000
+                yaxis: { title: 'Pressão (Mpa)', range: [0, 50] }       // Pressão fixada entre 0 e 500
             };
 
             var data = [trace];
@@ -293,44 +293,48 @@
                         
             // Atualizando os displays com os valores de temperatura e pressão
             document.getElementById('temperaturaDisplay').textContent = `Temp: ${temperatura}°C`;
-            document.getElementById('pressaoDisplay').textContent = `Pressao: ${pressao.toFixed(0)} atm`;
+            document.getElementById('pressaoDisplay').textContent = `Pressao: ${(pressao*0.101325).toFixed(0)} Mpa`;
         
         }
 
-        // Função para calcular a cor da resistência conforme a temperatura
         function calcularCorResistencia(temperatura) {
-            let r, g, b;
+    let r, g, b;
 
-            if (temperatura <= 50) {
-                r = 255;
-                g = 255;
-                b = 255;
-            } else if (temperatura <= 150) {
-                r = 255;
-                g = 255;
-                b = 255 - ((temperatura - 100) * (255 / 250));
-            } else if (temperatura <= 500) {
-                r = 255;
-                g = 255 - ((temperatura - 250) * (255 / 350));
-                b = 0;
-            } else {
-                r = 255;
-                g = 255 - ((temperatura - 500) * (255 / 500));
-                b = 0;
-            }
+    // De 0 a 50°C: Branco para Amarelo
+    if (temperatura <= 10) {
+        r = 255;
+        g = 255;
+        b = linearInterpolation(temperatura, 0, 30, 255, 0);  // Azul vai de 255 para 0
+    }
+    // De 50 a 500°C: Amarelo para Vermelho
+    else {
+        r = 255;
+        g = linearInterpolation(temperatura, 50, 500, 255, 50);  // Verde vai de 255 para 0
+        b = 0;  // Azul permanece 0
+    }
 
-            return `rgb(${r}, ${g}, ${b})`; // Retorna a cor no formato RGB
-        }
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;  // Arredonda para garantir inteiros
+}
+
+// Função de interpolação linear
+function linearInterpolation(temperatura, tempInicio, tempFim, valorInicio, valorFim) {
+    return valorInicio + ((valorFim - valorInicio) / (tempFim - tempInicio)) * (temperatura - tempInicio);
+}
+
+
+
+
+
 
         // Função para iniciar o aquecimento
         function iniciarAnimacao() {
             intervalo = setInterval(() => {
-                if (temperatura < 1000) {
+                if (temperatura < 500) {
                     atualizarCaldeira();
                 } else {
                     clearInterval(intervalo); // Quando atingir 1000º, para o intervalo
                     document.querySelector(".ponteiro").style.transition = 'none'; // Desabilitar transições após a animação
-                    document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 1000) * 30}deg)`; // Fixar na última posição
+                    document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 500) * 30}deg)`; // Fixar na última posição
                 }
             }, 10); // Atualiza a cada 50ms, controlando o tempo da animação
         }
