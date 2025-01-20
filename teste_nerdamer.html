@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experimento de Derivada</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.3.0/math.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <!-- Carregando o Nerdamer -->
+    <script src="nerdamer.core.js"></script>  <!-- Certifique-se de que o arquivo está no diretório correto -->
+    <script src="Algebra.js"></script>
+    <script src="Calculus.js"></script>
+    <script src="Solve.js"></script>
+    <script src="Extra.js"></script>
+
+    <!-- Carregando o Plotly -->
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@latest/plotly.min.js"></script>
+
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #fcd405;
+        color: #334871;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+
+        background-color: #033A6B;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    h1 {
+        margin: 0;
+        text-align: left;
+    }
+    p {
+        text-align: left;
+    }
+
+    header img {
+        width: 300px; /* A imagem ocupa 40% da largura do header */
+        height: auto; /* Mantém a proporção da imagem */
+        margin-left: auto; /* Espaço entre o texto e a imagem */
+        align-self: flex-start; /* Alinha a imagem ao topo */
+
+    } 
+
+    .container {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+    }
+
+    .sidebar {
+        background-color: #334871;
+        color: white;
+        margin-top: 10 px;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+
+    .l-sidebar {
+        width: 300px;
+        margin-left: 10px; /* Espaço entre o gráfico e o painel da direita */
+        height: 500px; /* Ajuste para a altura do gráfico */
+        overflow-y: auto; /* Permite rolagem se o conteúdo for grande */
+
+    }
+
+    .r-sidebar {
+        width: 400px;
+        margin-right: 10px; /* Espaço entre o gráfico e o painel da direita */
+        height: 500px; /* Ajuste para a altura do gráfico */
+        overflow-y: auto; /* Permite rolagem se o conteúdo for grande */
+
+    }
+
+    /* Mudança importante: O uso de flexbox no .input-container para organizar rótulo e input */
+    .input-container {
+        display: flex;
+        flex-direction: column; /* Organiza rótulo e input em coluna (um em cima do outro) */
+        margin-bottom: 15px; /* Adiciona um espaço entre os campos */
+    }
+
+    /* Garantir que o rótulo fique acima do campo de entrada */
+    .sidebar label {
+        font-size: 14px;
+        margin-bottom: 5px;  /* Espaço entre o rótulo e a caixa de entrada */
+    }
+
+    /* Estilo dos campos de entrada e botões */
+    .sidebar input, .sidebar button {
+        padding: 5px;
+        font-size: 12px;
+        border-radius: 10px;
+        width: 90%;  /* Garante que a largura seja 100% do espaço disponível */
+    }
+
+    #h-slider {
+        width: 90%;  /* Ajuste para garantir que o slider tenha o mesmo tamanho do input */
+    }
+
+    button {
+        background-color: #4c8bf5;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #3a6cbf;
+    }
+
+    button:active {
+        background-color: #2a507b;
+    }
+
+    /* Área do gráfico */
+    #graph {
+        flex-grow: 1;
+
+        padding: 10px;
+        border-radius: 10px;
+        background-color: white;
+        height: 500px; /* Altura ajustada para o gráfico */
+        width: 100%;   /* Largura 100% do espaço disponível */
+        max-width: 800px; /* Limitar a largura máxima para evitar que fique muito largo */
+        margin-top: 10px;  /* Adiciona um pequeno espaço em cima */
+
+    }
+    
+    .carousel {
+        position: relative;
+        width: 100%;
+        height: auto;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .carousel-item {
+        display: none;
+    }
+
+    .carousel-item.active {
+        display: block;
+        text-align: center;  /* Centraliza o conteúdo dentro do item do carrossel */
+        margin-bottom: 20px;  /* Adiciona espaço entre as imagens */
+    }
+
+    .carousel-item img {
+        width:700px;
+        height: auto;  /* Ajusta a imagem de forma proporcional */
+    }
+
+    .carousel-caption {
+        color: #333;
+        font-size: 18px; /* Ajuste o tamanho da fonte conforme necessário */
+        font-weight: bold;
+        background-color: #fcd405;  /* Cor de fundo amarela */
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 10px; /* Espaço entre a imagem e o texto */
+    }
+    .carousel-prev, .carousel-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #fff;
+        font-size: 30px;
+        text-decoration: none;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .carousel-prev {
+        left: 10px;
+    }
+
+    .carousel-next {
+        right: 10px;
+    }
+    h2 {
+        font-size: 10;
+        margin: 0;
+        text-align: left;
+    }
+
+
+
+
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>Conceito de derivada: uma abordagem interativa e dinâmica.</h1>
+    <p>Olá, sejam bem-vindos! Nesta atividade vamos estudara ideia de derivada a partir da variação de uma função.
+        Primeiro, vamos discutir alguns aspectos conceituais e geométricos.
+    </p>
+
+
+    <div id="carousel" class="carousel">
+        <div class="carousel-item">
+            <img src="modeling.png" alt="Imagem 1">
+            <div class="carousel-caption"><p>Fenômenos da vida real são estudados por meio de modelos, 
+                que podem ser empíricos (baseados em observações e experimentos), conceituais (representados por diagramas ou esquemas) 
+                ou simbólicos (expressos por funções e equações matemáticas).</p>
+
+
+            </div>
+        </div>
+        <div class="carousel-item active">
+            <iframe src="caldeira.html" width="100%" height="500px" style="border:none;"></iframe>
+            <div class="carousel-caption"><p>Por exemplo, o comportamento da pressão em uma caldeira pode 
+                ser modelado pela sua relação de proporcionalidade com a temperatura, resultando em uma função linear.</p>
+
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="fig_01.png" alt="Imagem 2">
+            <div class="carousel-caption"><p>O gráfico de uma função representa a relação entre uma variável 
+                dependente \( y = f(x) \) e uma variável independente \( x \).</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="fig_02.png" alt="Imagem 3">
+            <div class="carousel-caption"><p>A variação da função \( f(x) \) pode ser estudada por meio de sua
+                 taxa de variação média, dada por \( \frac{\Delta y}{\Delta x} = \frac{f(x_2) - f(x_1)}{x_2 - x_1} \). 
+                 Esta taxa de variação média é representada geometricamente pela inclinação da reta secante \( s \).</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="fig_03.png" alt="Imagem 4">
+            <div class="carousel-caption"><p>O Cálculo Diferencial estuda a taxa de variação instantânea de uma
+                 função em um ponto \( x_0 \), que é dada pelo limite \( \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h} = f'(x_0) \). 
+                 A derivada \( f'(x_0) \) é o coeficiente angular da reta tangente \(t\) ao gráfico de \( f(x) \) no ponto \( (x_0, f(x_0)) \).</p>
+
+            </div>
+        </div>
+        <a href="#" class="carousel-prev" onclick="moveSlide(-1)">&#10094;</a>
+        <a href="#" class="carousel-next" onclick="moveSlide(1)">&#10095;</a>
+    </div>
+
+    <p>A seguir, vamos desenvolver uma atividade interativa e dinâmica explorando a taxa de variação de uma função.</p>
+        <p>Ao calcular a taxa de variação instantânea de uma função \(f(x)\) em diferentes
+         pontos \(x_0\) podemos construir uma outra função \(f'(x)\), denominada função derivada de \(f(x)\).
+    </p>
+</header>
+<div class="container">
+
+    <div class="sidebar l-sidebar">
+        <p><strong>Instruções</strong></p>
+        <p>1. Digite a expressão de uma função (Ex: x^2, x^3, e^x, sin(x))</p>
+
+        <label for="function">Função f(x):</label>
+        <input type="text" id="function" value="x^2">
+
+        <p>2. Entre com o ponto inicial.</p>
+
+
+        <label for="x0">Ponto inicial (x0):</label>
+        <input type="number" id="x0" value="1">
+
+        <p>3. Determine o valor do incremento \(h\).</p>
+
+        <div class="slider-container">
+            <label for="h">Valor de h:</label><span id="h-value">1</span>
+            <input type="range" id="h" min="0.01" max="5" step="0.1" value="1">
+            
+        </div>
+
+        <p>Clique no botão para fazer \(h \to 0 \).</p>
+
+        <button id="play-pause">Play</button>
+
+    </div>
+
+    <div class="graph-container">
+        <div id="graphs">
+            <div id="f-graph"></div>
+            <div id="fdgraph"></div>
+        </div>
+    </div>
+
+
+
+    <div class="sidebar r-sidebar">
+        <p><strong>Resultados:</strong></p>
+        <p><strong>\(x_0\)=</strong> <span id="x0-result">1</span></p>
+        <p><strong>\(f(x_0)\)=</strong> <span id="fx0-result">f(1)</span></p>
+        <p><strong>\(h\):</strong> <span id="h-result">1</span></p>
+
+        <p><strong>\(x_0 + h\)=</strong> <span id="x0h-result">2</span></p>
+        <p><strong>\(f(x_0 + h)\)=</strong> <span id="fx0h-result">f(2)</span></p>
+        <p><strong>\( f(x_0 + h) - f(x_0) \)=</strong> <span id="variation-result">f(2)-f(1)</span></p>
+        <p><strong>\( \frac{f(x_0 + h) - f(x_0)}{h} \)=</strong> <span id="coefsec-result">f(2)-f(1)</span></p>
+        <p><strong>\(f'(x_0)\)</strong> <span id="derivative-result">Derivada</span></p>
+        <p><strong>Clique no botão abaixo para revelar a função derivada \(f'(x)\).</strong></p>
+        <button id="show-derivative">Mostrar Derivada</button>
+        <p id="derivative-info"></p>
+    </div>
+
+</div>
+
+
+
+
+
+
+    <script>
+
+let currentIndex = 0;
+
+function showSlide(index) {
+    const items = document.querySelectorAll('.carousel-item');
+    if (index >= items.length) currentIndex = 0;
+    if (index < 0) currentIndex = items.length - 1;
+
+    items.forEach(item => item.classList.remove('active'));
+    items[currentIndex].classList.add('active');
+}
+
+function moveSlide(step) {
+    currentIndex += step;
+    showSlide(currentIndex);
+}
+
+// Inicializa o carrossel
+showSlide(currentIndex);
+
+
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const x0Input = document.getElementById('x0');
+            const hSlider = document.getElementById('h');
+            const hValue = document.getElementById('h-value');
+            const playPauseButton = document.getElementById('play-pause');
+            const showDerivativeButton = document.getElementById('show-derivative');
+            const x0result = document.getElementById('x0-result');
+            const hResult = document.getElementById('h-result');
+            const fx0Result = document.getElementById('fx0-result');
+            const x0hresult = document.getElementById('x0h-result');
+            const fx0hResult = document.getElementById('fx0h-result');
+            const variationResult = document.getElementById('variation-result');
+            const coefsecResult = document.getElementById('coefsec-result');
+            const derivativeResult = document.getElementById('derivative-result');
+            const fGraph = document.getElementById('f-graph');
+            const fdGraph = document.getElementById('fdgraph');
+            const functionInput = document.getElementById('function');  // A entrada da função
+    
+            let interval;
+            let h = parseFloat(hSlider.value);
+            let currentX0 = parseFloat(x0Input.value);
+            let functionText = functionInput.value; // A função inicial
+            let derivativePoints = []; // Lista para armazenar os pontos (x0, f'(x0)) no gráfico 2
+            let xPoints = [];
+            let yPoints = [];
+    
+            // Inicializando os gráficos
+            updateExperiment();
+            updateDerivativeGraph();
+    
+            // Atualizar o valor de h e recalcular a experiência
+            hSlider.addEventListener('input', () => {
+                h = parseFloat(hSlider.value);
+                hValue.textContent = h.toFixed(1);
+                updateExperiment();
+            });
+    
+            // Iniciar/pausar a atualização automática de h
+            playPauseButton.addEventListener('click', () => {
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                    playPauseButton.textContent = 'Play';
+                } else {
+                    interval = setInterval(() => {
+                        if (h > 0) {
+                            h -= 0.01;
+                            hSlider.value = h;
+                            hValue.textContent = h.toFixed(1);
+                            updateExperiment();
+                        } else {
+                            clearInterval(interval);
+                            interval = null;
+                            playPauseButton.textContent = 'Play';
+                        }
+                    }, 1000);
+                }
+            });
+    
+            // Mostrar a derivada ao clicar no botão
+            showDerivativeButton.addEventListener('click', () => {
+                const derivative = nerdamer.diff(functionText, 'x');
+                plotDerivativeGraph(derivative.text()); // Exibe a curva da derivada
+            });
+    
+            // Atualizar o valor de x0 e recalcular
+            x0Input.addEventListener('input', () => {
+                currentX0 = parseFloat(x0Input.value);
+                updateExperiment();
+                // Adiciona o novo ponto (x0, f'(x0)) ao vetor de pontos
+                const derivative = nerdamer.diff(functionText, 'x');
+                const derivativeValue = parseFloat(nerdamer(derivative).evaluate({x: currentX0}).text());
+                derivativePoints.push({x: currentX0, y: derivativeValue}); // Armazena o ponto no vetor
+                updateDerivativeGraph(); // Atualiza o gráfico da derivada com todos os pontos
+            });
+    
+            // Atualizar o valor da função e recalcular
+            functionInput.addEventListener('input', () => {
+                functionText = functionInput.value; // Atualiza a função
+                derivativePoints = []; // Reseta os pontos da derivada, já que a função mudou
+                updateExperiment(); // Atualiza a experiência com a nova função
+                updateDerivativeGraph(); // Atualiza o gráfico da derivada com a nova função
+            });
+    
+            // Atualiza a experiência com base em h e x0
+            function updateExperiment() {
+                const x0 = currentX0;
+    
+                const fx0 = evalFunction(functionText, currentX0);
+                const x0h = currentX0 + h;
+                const fx0h = evalFunction(functionText, currentX0 + h);
+                const variational = (fx0h - fx0);
+                const coefsec = (fx0h - fx0) / h;
+                
+                x0result.textContent = x0;
+                fx0Result.textContent = parseFloat(fx0).toFixed(3);
+                x0hresult.textContent = x0h;
+                fx0hResult.textContent = parseFloat(fx0h).toFixed(3);
+                hResult.textContent = h;
+                variationResult.textContent = variational.toFixed(3);
+                coefsecResult.textContent = coefsec.toFixed(3);
+    
+                if (Math.abs(h) <= 0.01) {
+                    const derivative = nerdamer.diff(functionText, 'x');
+                    const slope = parseFloat(nerdamer(derivative).evaluate({x: x0}).text());
+                    derivativeResult.textContent = `= ${slope.toFixed(3)}`;
+                    coefsecResult.textContent = "\\(f\'(x_0)\\)";
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+                    plotFunctionGraph(functionText, currentX0, 0); // Tangente
+                } else {
+                    coefsecResult.textContent = coefsec.toFixed(3);
+                    derivativeResult.textContent = "";
+                    plotFunctionGraph(functionText, currentX0, h); // Secante
+                }
+            }
+    
+            // Função para avaliar f(x)
+            function evalFunction(func, x) {
+                try {
+                    return nerdamer(func).evaluate({x: x}).text();
+                } catch (error) {
+                    console.error('Erro ao avaliar a função:', error);
+                    return 'Erro';
+                }
+            }
+    
+            // Função para plotar o gráfico da função e secante/tangente
+            function plotFunctionGraph(func, x0, h) {
+                const xValues = [];
+                const fValues = [];
+    
+                const dashLine1X = [x0, x0];
+                const dashLine1Y = [0, evalFunction(func, x0)];
+                const dashLine2X = [x0 + h, x0 + h];
+                const dashLine2Y = [0, evalFunction(func, x0 + h)];
+                const dashLineXx = [x0, x0 + h];
+                const dashLineXy = [evalFunction(func, x0), evalFunction(func, x0)];
+    
+                for (let x = -10; x <= 10; x += 0.1) {
+                    xValues.push(x);
+                    fValues.push(evalFunction(func, x));
+                }
+    
+                const fTrace = {
+                    x: xValues,
+                    y: fValues,
+                    mode: 'lines',
+                    name: 'Gráfico de $f(x)$',
+                };
+    
+                const secantX = [];
+                const secantY = [];
+                const secantSlope = (evalFunction(func, x0 + h) - evalFunction(func, x0)) / h;
+    
+                for (let x = x0 - 2; x <= x0 + h + 2; x += 1) {
+                    secantX.push(x);
+                    const yValue = parseFloat(evalFunction(func, x0)) + secantSlope * (x - x0);
+                    secantY.push(yValue);
+                }
+    
+                const secantTrace = {
+                    x: secantX,
+                    y: secantY,
+                    mode: 'lines',
+                    name: 'Secante',
+                    line: { dash: 'dot', color: 'red' }
+                };
+    
+                const dashLine1 = {
+                    x: dashLine1X,
+                    y: dashLine1Y,
+                    mode: 'lines',
+                    name: 'Segmento 1',
+                    line: { color: 'green', dash: 'dash' },
+                    showlegend: false
+                };
+                const dashLine2 = {
+                    x: dashLine2X,
+                    y: dashLine2Y,
+                    mode: 'lines',
+                    name: 'Segmento 2',
+                    line: { color: 'green', dash: 'dash' },
+                    showlegend: false
+                };
+    
+                const dashLineX = {
+                    x: dashLineXx,
+                    y: dashLineXy,
+                    mode: 'lines',
+                    name: 'Segmento 3',
+                    line: { color: 'green', dash: 'dash' },
+                    showlegend: false
+                };
+    
+                const layout = {
+                    title: 'Gráfico da Função $f(x)$',
+                    xaxis: { title: '$x$', range: [-10, 10] },
+                    yaxis: { title: '$f(x)$' },
+                };
+    
+                if (Math.abs(h) <= 0.01) {
+                    const derivative = nerdamer.diff(func, 'x');
+                    const slope = parseFloat(nerdamer(derivative).evaluate({x: x0}).text());
+                    const f_x0 = parseFloat(evalFunction(func, x0));
+    
+                    const tangentX = [];
+                    const tangentY = [];
+                    for (let x = x0 - 2; x <= x0 + 2; x += 0.1) {
+                        tangentX.push(x);
+                        tangentY.push(f_x0 + slope * (x - x0));
+                    }
+    
+                    const tangentLine = {
+                        x: tangentX,
+                        y: tangentY,
+                        mode: 'lines',
+                        name: 'Tangente',
+                        line: { color: 'red' }
+                    };
+    
+                    Plotly.newPlot(fGraph, [fTrace, tangentLine, dashLine1, dashLine2], layout);
+                } else {
+                    Plotly.newPlot(fGraph, [fTrace, secantTrace, dashLine1, dashLine2, dashLineX], layout);
+                }
+            }
+    
+            // Função para plotar a curva da derivada quando o botão for pressionado
+            function plotDerivativeGraph(derivativeFunc) {
+                const xValues = [];
+                const yValues = [];
+    
+                // Gerar valores de x e f'(x)
+                for (let x = -10; x <= 10; x += 0.1) {
+                    xValues.push(x);
+                    const derivativeValue = evalFunction(derivativeFunc, x);
+                    yValues.push(derivativeValue);
+                }
+    
+                const derivativeTrace = {
+                    x: xValues,
+                    y: yValues,
+                    mode: 'lines',
+                    name: "$f\'(x)$",
+                    line: { color: 'black' },
+                };
+    
+                // Plotar todos os pontos (x_0, f'(x_0)) acumulados
+                const derivativePointsTrace = {
+                    x: derivativePoints.map(point => point.x),
+                    y: derivativePoints.map(point => point.y),
+                    mode: 'markers',
+                    name: 'Pontos $(x_0, f\'(x_0))$',
+                    marker: { color: 'red' },
+                    showlegend: true
+                };
+    
+                const layout = {
+                    title: 'Gráfico da Derivada $f\'(x)$',
+                    xaxis: { title: '$x$' },
+                    yaxis: { title: "$f'(x)$" },
+                };
+    
+                Plotly.newPlot(fdGraph, [derivativeTrace, derivativePointsTrace], layout);
+            }
+    
+            // Função para atualizar o gráfico da derivada com os pontos acumulados
+            function updateDerivativeGraph() {
+                // Não desenha a curva da derivada imediatamente, apenas os pontos acumulados
+                const derivativePointsTrace = {
+                    x: derivativePoints.map(point => point.x),
+                    y: derivativePoints.map(point => point.y),
+                    mode: 'markers',
+                    name: 'Pontos $(x_0, f\'(x_0))$',
+                    marker: { color: 'red' },
+                    showlegend: true
+                };
+    
+                Plotly.newPlot(fdGraph, [derivativePointsTrace], {
+                    title: 'Derivada de $f(x)$',
+                    xaxis: { title: '$x$' },
+                    yaxis: { title: "$f'(x)$" },
+                });
+            }
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
