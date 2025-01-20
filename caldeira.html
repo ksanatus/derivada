@@ -334,7 +334,7 @@ function linearInterpolation(temperatura, tempInicio, tempFim, valorInicio, valo
                 } else {
                     clearInterval(intervalo); // Quando atingir 1000º, para o intervalo
                     document.querySelector(".ponteiro").style.transition = 'none'; // Desabilitar transições após a animação
-                    document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 500) * 30}deg)`; // Fixar na última posição
+                    document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 500) * 60}deg)`; // Fixar na última posição
                 }
             }, 10); // Atualiza a cada 50ms, controlando o tempo da animação
         }
