@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caldeira e Gráfico</title>
+    <link href="https://fonts.cdnfonts.com/css/digital-7-mono" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fcd405;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 91vh;
+            flex-direction: column;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        .caldeira-container, .grafico-container {
+            display: flex;
+            flex-direction: column;  /* Alinha os itens de forma vertical */
+            justify-content: center;
+            align-items: center;  /* Centraliza todos os itens dentro do container */
+            width: 48%;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fcd405;
+            
+        }
+                .caldeira-container h2 {
+            text-align: center;
+        }
+        .grafico-container h2 {
+            margin-top: 0px;
+            text-align: center;
+        }
+
+        .caldeira-container {
+            width: 300px;
+            background-color: #fcd405;
+            align-items: center;
+        }
+
+        .grafico-container {
+            background-color: #fcd405;
+        }
+
+        .caldeira {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 150px;
+            height: 200px;
+            background-color: #999;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+        }
+
+        .resistencia {
+            width: 40px;
+            height: 80px;
+            background-color: #ffffff; /* Cor inicial branca */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            transition: background-color 1s ease-in-out; /* Transição suave entre as cores */
+        }
+
+        .resistencia-letter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+                .manometro {
+            width: 150px;
+            height: 75px;
+            background-color: #444;
+            border-radius: 75px 75px 0 0;
+            position: relative;
+            margin-top: 10px;
+            margin-left: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Letras no meio do manômetro */
+        .manometro-letter {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .ponteiro {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform-origin: bottom;
+            width: 2px;
+            height: 60px;
+            background-color: #ff0;
+            transform: rotate(-40deg); /* Inicia na posição */
+            transition: transform 2s ease-in-out; /* Transição suave */
+        }
+
+        .termometro {
+            width: 20px;
+            height: 100px;
+            background-color: #ccc;
+            position: relative;
+            margin-left: 130px;
+        }
+
+        .nivel {
+            width: 100%;
+            height: 0;
+            background-color: #ff4500;
+            position: absolute;
+            bottom: 0;
+            transition: height 0.2s ease-in-out;
+        }
+
+        /* Letras no topo do termômetro */
+        .termometro-letter {
+            position: absolute;
+            top: 20px; /* Ajuste a posição conforme necessário */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            z-index: 10; /* Garante que a letra "T" fique acima do nível */
+        }
+
+        .aquecendo .resistencia {
+            background-color: #ff0000; /* Cor final vermelha */
+        }
+
+        .aquecendo .nivel {
+            height: 100%;
+        }
+
+        #grafico {
+            width: 100%;
+            height: 400px;
+            position: center;
+        }
+        
+        /* Display Digital */
+        .display {
+            font-family: 'Digital-7 Mono', sans-serif;
+            font-size: 30px;
+            color: #333;
+            letter-spacing: 3px;
+        }
+
+        /* Container para o display de temperatura e pressão */
+        .caldeira-info, .manometro-info {
+            margin-top: 20px;
+        }
+
+        /* Estilo do botão Play */
+        #playButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #2a507b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #playButton:hover {
+            background-color: #2a507b;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="container">
+        <!-- Caldeira com resistência -->
+        <div class="caldeira-container">
+            <h2>Caldeira</h2>
+            <div class="caldeira">
+                <div class="resistencia">
+                    <span class="resistencia-letter">R</span>
+                </div>
+                <div class="termometro">
+                    <div class="nivel"></div>
+                    <span class="termometro-letter">T</span>
+                </div>
+            </div>
+
+            <div class="manometro">
+                <span class="manometro-letter">M</span>
+                <div class="ponteiro"></div>
+            </div>
+
+            <!-- Display para Temperatura e Pressão -->
+            <div class="caldeira-info">
+                <div class="display" id="temperaturaDisplay">Tempo: 0s</div>
+                <div class="display" id="pressaoDisplay">Temperatura: 0 °C</div>
+            </div>
+
+            <!-- Botão Play dentro da caldeira-container -->
+            <button id="playButton">Iniciar Animação</button>
+        </div>
+
+        <!-- Gráfico de Temperatura vs Pressão -->
+        <div class="grafico-container">
+            <h2>Gráfico</h2>
+            <div id="grafico"></div>
+        </div>
+    </div>
+
+    <!-- Scripts para animações ou gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@latest/plotly.min.js"></script>
+    
+
+    <script>
+        // Variáveis iniciais
+        let temperatura = 0; // Temperatura inicial (°C)
+        let pressao = 0;     // Pressão inicial (atm)
+        let tempo = 0;       // Tempo em segundos
+        let intervalo;       // Referência do setInterval
+        const k = 0.5;       // Constante de proporcionalidade para a pressão
+        let temperaturas = []; // Array para armazenar temperaturas
+        let pressoes = []; // Array para armazenar pressões
+        let temperaturaLimite = 400; // Limite da temperatura (valor máximo que a função logística se aproxima)
+
+        function calcularTemperatura(tempo) {
+            let temperatura = temperaturaLimite / (1 + Math.exp(-0.2 * (tempo - 14)));
+            return temperatura ; // Convertendo para Celsius
+        }
+
+        // Função para atualizar a caldeira e o gráfico
+        function atualizarCaldeira() {
+            // Aumentando a temperatura e a pressão ao longo do tempo
+            temperatura +=  1; // Incrementa a temperatura gradualmente
+            let temperaturaKelvin = calcularTemperatura(tempo); // Convertendo para Kelvin
+            
+            pressao = temperaturaKelvin; // Pressão proporcional à temperatura em Kelvin
+            tempo++;
+
+            // Atualizando a cor da resistência com base na temperatura
+            let corResistencia = calcularCorResistencia(temperatura);
+            document.querySelector(".resistencia").style.backgroundColor = corResistencia;
+
+            // Adiciona a temperatura e a pressão aos arrays
+            temperaturas.push(temperatura);
+            pressoes.push(pressao);
+
+            // Atualizando a caldeira (termo, manômetro e resistência)
+            document.querySelector(".nivel").style.height = `${(temperatura / 10)}%`; // Ajustando a altura do nível no termômetro
+            document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 200) * 100}deg)`; // Manômetro
+           /*  if (temperatura > 30) {
+                document.querySelector(".caldeira").classList.add("aquecendo");
+            } */
+
+            // Atualiza o gráfico para mostrar apenas os pontos até o momento
+            var trace = {
+                x: temperaturas, // Temperatura (em °C)
+                y: pressoes,     // Pressão (atm)
+                type: 'scatter',
+                mode: 'markers',  // Apenas os pontos, sem linha
+                marker: { color: 'blue' }
+            };
+
+            var layout = {
+                title: 'Temperatura vs Tempo',
+                xaxis: { title: 'Tempo (s)', range: [0, 100], dtick: 50 },  // Temperatura fixada entre 0 e 1000
+                yaxis: { title: 'Temperatura (°C)', range: [0, 400] }       // Pressão fixada entre 0 e 500
+            };
+
+            var data = [trace];
+
+            Plotly.newPlot('grafico', data, layout);
+                        
+            // Atualizando os displays com os valores de temperatura e pressão
+            document.getElementById('temperaturaDisplay').textContent = `Tempo: ${temperatura.toFixed(0)} s`;
+            document.getElementById('pressaoDisplay').textContent = `Temp.: ${(pressao).toFixed(0)} °C`;
+        
+        }
+
+        function calcularCorResistencia(temperatura) {
+    let r, g, b;
+
+    // De 0 a 50°C: Branco para Amarelo
+    if (temperatura <= 10) {
+        r = 255;
+        g = 255;
+        b = linearInterpolation(temperatura, 0, 30, 255, 0);  // Azul vai de 255 para 0
+    }
+/*     // De 50 a 500°C: Amarelo para Vermelho
+    else {
+        r = 255;
+        g = linearInterpolation(temperatura, 50, 400, 255, 50);  // Verde vai de 255 para 0
+        b = 0;  // Azul permanece 0
+    } */
+
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;  // Arredonda para garantir inteiros
+}
+
+// Função de interpolação linear
+function linearInterpolation(temperatura, tempInicio, tempFim, valorInicio, valorFim) {
+    return valorInicio + ((valorFim - valorInicio) / (tempFim - tempInicio)) * (temperatura - tempInicio);
+}
+
+
+
+
+
+
+        // Função para iniciar o aquecimento
+        function iniciarAnimacao() {
+            intervalo = setInterval(() => {
+                if (temperatura < 200) {
+                    atualizarCaldeira();
+                } else {
+                    clearInterval(intervalo); // Quando atingir 1000º, para o intervalo
+                    document.querySelector(".ponteiro").style.transition = 'none'; // Desabilitar transições após a animação
+                    document.querySelector(".ponteiro").style.transform = `rotate(${(temperatura / 400) * -20}deg)`; // Fixar na última posição
+                }
+            }, 50); // Atualiza a cada 50ms, controlando o tempo da animação
+        }
+
+        // Evento para iniciar a animação ao clicar no botão Play
+        document.getElementById('playButton').addEventListener('click', function() {
+            iniciarAnimacao(); // Inicia a animação da caldeira
+        });
+                // Inicializa o gráfico com os dados iniciais
+                inicializarGrafico();
+    </script>
+
+</body>
+</html>

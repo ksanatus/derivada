@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Taxa de Variação</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.10.0/plotly.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="stylevar.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.4.0/math.min.js"></script>
+    <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+      
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.10.0/plotly.min.js"></script>
+    <script src="scriptvar.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Parâmetros</h2>
+            <label for="func">Função:</label>
+            <input type="text" id="func" placeholder="Digite f(x)" value="x^2">
+
+            <label for="x0">Valor de x0:</label>
+            <input type="range" id="x0" min="-10" max="10" step="0.1" value="1">
+            <span id="x0-value">1</span>
+
+            <label for="h">Incremento (h):</label>
+            <input type="range" id="h" min="0.1" max="5" step="0.1" value="1">
+            <span id="h-value">1</span>
+
+            <h3>Valores:</h3>
+            <p>\(x_0:\) <span id="x0-text">1</span></p>
+            <p>\(h:\) <span id="h-text">1</span></p>
+            <p>\(x_0 + h:\) <span id="x0h-text">2</span></p>
+            <p>\(f(x_0):\) <span id="f-x0-text">1</span></p>
+            <p>\(f(x_0 + h):\) <span id="f-x0h-text">4</span></p>
+            <p>\( \frac{f(x_0 + h) - f(x_0)}{h} \): <span id="rate-text">3</span></p>
+        </div>
+
+        <div id="grafico" class="grafico"></div>
+    </div>
+
+
+</body>
+</html>
